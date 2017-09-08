@@ -1,6 +1,10 @@
 <table border="1">
     <thead>
-
+        <tr>
+            {% for foo in hd_list %}
+                <th>{{ foo }}</th>
+            {% endfor %}
+        </tr>
     </thead>
     <tbody>
     {% for item in res %}

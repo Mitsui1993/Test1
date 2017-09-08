@@ -12,7 +12,29 @@ def table_body(result_list,list_display,admin_obj):
     :return:
     """
     for row in result_list:
-        yield [name(admin_obj,row) if isinstance(name,FunctionType) else getattr(row,name) for name in list_display]
+        if list_display == "__all__":
+            yield [str(row)]
+        else:
+            yield [name(admin_obj,row) if isinstance(name,FunctionType) else getattr(row,name) for name in list_display]
+
+def table_header(list_display,admin_obj):
+    """
+    表头名称显示
+    :param list_display:
+    :param admin_obj:
+    :return:
+    """
+    if list_display == "__all__":
+        yield "对象列表"
+    else:
+        for item in list_display:
+            if isinstance(item,FunctionType):
+                #是函数，显示定制的中文
+                yield item(admin_obj,is_header = True)
+            else:
+                #不是函数，显示字段的verbose_name值
+                #get_field(username) = models.Charfiled()对象，可以有verbose_name属性
+                yield admin_obj.model_class._meta.get_field(item).verbose_name
 
 @register.inclusion_tag("md/md.html")
 def func(result_list,list_dispaly,admin_obj):
@@ -25,5 +47,6 @@ def func(result_list,list_dispaly,admin_obj):
     :return:
     """
     v = table_body(result_list,list_dispaly,admin_obj)
+    h = table_header(list_dispaly,admin_obj)
 
-    return {'res':v}
+    return {'res':v,'hd_list':h}
