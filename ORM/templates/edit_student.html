@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+</head>
+<body>
+<h1>编辑学生</h1>
+<div class="form-group">
+    <form method="POST" action="/edit_student/?nid={{ res.sid }}">
+        <p>学生姓名<input type="text" name="title" value="{{ res.sname }}"></p>
+        <select name="class_id" >
+            {% for row in class_id %}
+                <option value="res.cid">{{ res.cname }}</option>
+
+            {% endfor %}
+        </select>
+
+        <input type="submit" value="提交">
+
+    </form>
+</div>
+</body>
+</html>

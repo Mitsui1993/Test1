@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .hide{
+            display: none;
+        }
+        .shadow{
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black;
+            opacity: 0.4;
+            z-index: 999;
+        }
+        .modal{
+            z-index: 1000;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            height: 300px;
+            width: 400px;
+            background-color: white;
+            margin-left: -200px;
+            margin-top: -150px;
+        }
+    </style>
+</head>
+<body>
+    <h1>班级列表</h1>
+    <div>
+        <a href="/add_class/">添加</a>
+        <a onclick="showModal(this,1)">对话框添加</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>班级名称</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in class_list %}
+                <tr>
+                    <td>{{ row.cid }}</td>
+                    <td>{{ row.cname }}</td>
+                    <td>
+                        <a href="/edit_class/?nid={{ row.cid }}">编辑</a>
+                        <a onclick="showModal(this,2)">对改</a>
+                        <a href="/del_class/?nid={{ row.cid }}">删除</a>
+                        <a onclick="showModal(this,3)">对删</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="shadow" class="shadow hide"></div>
+    <div id="modal" class="modal hide">
+        <p>
+            <input id="title" type="text" name="title" >
+        </p>
+        <input type="button" value="提交" onclick="AjaxSend(1);">
+        <input type="button" value="取消" onclick="AjaxCancel();">
+        <span id="tip"></span>
+    </div>
+    <div id="edit_class" class="modal hide">
+        <p>班级名称<input type="text" id="cname" value=""></p>
+        <input type="button" value="提交" onclick="AjaxSend(2)">
+        <input type="button" value="取消" onclick="AjaxCancel()">
+        <div class="hide" id="cid"></div>
+    </div>
+    <div id="del_class" class="modal hide">
+        <p>确定要删除<span><strong></strong></span>吗？</p>
+        <input type="button" value="确定" onclick="AjaxSend(3);">
+        <input type="button" value="取消" onclick="AjaxCancel();">
+        <div class="hide" id="del_cid"></div>
+    </div>
+
+
+
+    <script src="/static/jquery-3.2.1.js"></script>
+    <script>
+        function showModal(self,num) {
+            var $cid = ($(self).parent().siblings().eq(0).text());
+{#            var $cid = ($(self).parent().siblings().eq(1).text());#}
+            var $cname = ($(self).parent().siblings().eq(1).text());
+            document.getElementById('shadow').classList.remove('hide');
+            if (num==1){
+                document.getElementById('modal').classList.remove('hide');
+            }
+            else if (num==2){
+                document.getElementById('edit_class').classList.remove('hide');
+                $('#edit_class p input').val($cname)
+                $('#edit_class div').text($cid)
+            }
+            else {
+                document.getElementById('del_class').classList.remove('hide');
+                $('#del_class strong').text($cname);
+                $('#del_class div').text($cid)
+            }
+        }
+
+        function AjaxSend(num) {
+            if (num==1){
+                var $url ='/modal_add_class/';
+                var $value = {'title':$('#title').val()};
+            }
+            else if (num==2){
+                var $url = '/modal_edit_class/';
+                var $value = {'cid':$('#cid').text(),'cname':$('#cname').val()}
+            }
+            else {
+                var $url = '/modal_del_class/';
+                var $value = {'cid':$('#del_cid').text()}
+            }
+            $.ajax({
+                url:$url,
+                type:'POST',
+                data:$value,
+                success:function (data) {
+                    //当服务端处理完成后，返回数据时，该函数自动调用
+                    //data=服务端返回的值
+                    console.log(data);
+                    if (data == 'ok'){
+                        //location.href='/classes/';
+                        location.reload()  //重刷新当前页面
+
+                    }else {
+                        $('#tip').text(data);
+                    }
+                }
+            })
+        }
+
+        function AjaxCancel() {
+            location.href='classes'
+        }
+    </script>
+</body>
+</html>

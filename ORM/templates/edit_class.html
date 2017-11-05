@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>编辑班级</h1>
+
+<form method="POST" action="/edit_class/?nid={{ res.cid }}">
+    <p>班级名称<input type="text" name="title" value="{{ res.cname }}"></p>
+    <input type="submit" value="提交">
+
+</form>
+</body>
+</html>
